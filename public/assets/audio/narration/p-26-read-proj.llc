@@ -1,0 +1,18 @@
+{
+  version: 2,
+  mediaFileName: 'p_26_read.mp3',
+  cutSegments: [
+    {
+      start: 0,
+      end: 6.541578,
+      name: '',
+      selected: true,
+    },
+    {
+      start: 8.759837598219255,
+      end: 14.602438,
+      name: '',
+      selected: true,
+    },
+  ],
+}

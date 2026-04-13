@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Rainbow Crystal - Interactive Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #fcfdfc;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        #map-container {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+        }
+
+        #map-container:active {
+            cursor: grabbing;
+        }
+
+        .node {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .node:hover {
+            opacity: 0.8;
+        }
+
+        .pulse-ring {
+            animation: ring-pulse 2s ease-out infinite;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+
+        .marker-anim-wrapper {
+            animation: marker-bounce 1.5s ease-in-out infinite;
+            transform-origin: center bottom;
+            transform-box: fill-box;
+        }
+
+        @keyframes ring-pulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        @keyframes marker-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-40px); }
+        }
+
+        text {
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map-container">
+        <svg id="map-svg" viewBox="-2600 -400 5400 5000" preserveAspectRatio="xMidYMid meet" class="w-full h-full overflow-visible">
+            <defs>
+                <pattern id="choice-stripes" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <rect width="16" height="16" fill="white" fill-opacity="0.4" />
+                    <line x1="0" y1="0" x2="0" y2="16" stroke="black" stroke-opacity="0.2" stroke-width="8" />
+                </pattern>
+
+                <mask id="hub-mask">
+                    <rect x="-3000" y="-1000" width="6000" height="6000" fill="white" />
+                    <g id="mask-circles"></g>
+                </mask>
+            </defs>
+
+            <g id="viewport-group" transform="translate(0, 500) scale(0.9)">
+                <g id="paths-layer" mask="url(#hub-mask)"></g>
+                <g id="nodes-layer"></g>
+                <g id="marker-layer"></g>
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        const colours = {
+            grey: '#475569', yellow: '#eab308', orange: '#f97316',
+            pink: '#db2777', purple: '#9333ea', cyan: '#0891b2', lime: '#65a30d'
+        };
+
+        const stations = [
+            { id: 1, x: -1800, y: -300, line: "grey" },
+            { id: 2, x: -1400, y: -280, line: "grey" },
+            { id: 3, x: -990, y: -290, line: "grey" },
+            { id: 4, x: -700, y: -310, line: "grey" },
+            { id: 5, x: -380, y: -330, line: "grey", isLarge: true },
+            { id: 6, x: -70, y: -150, line: "grey" },
+            { id: 7, x: 0, y: 300, line: "grey", isChoice: true },
+            { id: 8, x: 300, y: 200, line: "yellow" },
+            { id: 9, x: 600, y: 50, line: "yellow", isLarge: true },
+            { id: 10, x: 1000, y: -100, line: "yellow" },
+            { id: 11, x: 1550, y: -120, line: "yellow" },
+            { id: 12, x: 1990, y: 100, line: "yellow", isLarge: true },
+            { id: 13, x: 1900, y: 600, line: "yellow", isChoice: true },
+            { id: 14, x: 2250, y: 500, line: "orange" },
+            { id: 15, x: 2700, y: 700, line: "orange" },
+            { id: 16, x: 2750, y: 1000, line: "orange", isEnd: true },
+            { id: 17, x: -400, y: 400, line: "pink" },
+            { id: 18, x: -950, y: 450, line: "pink", isLarge: true },
+            { id: 19, x: -1750, y: 500, line: "pink" },
+            { id: 20, x: -2350, y: 1000, line: "pink", isLarge: true },
+            { id: 21, x: -1950, y: 1450, line: "pink" },
+            { id: 22, x: -900, y: 1250, line: "pink" },
+            { id: 23, x: 0, y: 1700, line: "pink", isHub: true }, 
+            { id: 24, x: 200, y: 2500, line: "pink", isChoice: true },
+            { id: 25, x: 800, y: 2400, line: "purple" },
+            { id: 26, x: 1100, y: 2100, line: "purple", isLarge: true },
+            { id: 27, x: 1800, y: 1900, line: "purple", isHub: true }, 
+            { id: 28, x: 2400, y: 2050, line: "purple" },
+            { id: 29, x: 2200, y: 2300, line: "purple", isEnd: true },
+            { id: 30, x: -400, y: 2600, line: "cyan" },
+            { id: 31, x: -500, y: 2200, line: "cyan" },
+            { id: 32, x: 0, y: 1500, line: "cyan", hidden: true }, 
+            { id: 33, x: -1100, y: 1800, line: "cyan" }, 
+            { id: 34, x: -1450, y: 1900, line: "cyan" },
+            { id: 35, x: -1900, y: 2100, line: "cyan" },
+            { id: 36, x: -1700, y: 2850, line: "cyan" },
+            { id: 37, x: -1200, y: 3050, line: "cyan" },
+            { id: 38, x: -800, y: 2850, line: "cyan", isEnd: true },
+            { id: 39, x: 2100, y: 1150, line: "lime" },
+            { id: 41, x: 1200, y: 1600, line: "lime" },
+            { id: 42, x: 800, y: 1600, line: "lime" },
+            { id: 44, x: 110, y: 1100, line: "lime" },
+            { id: 45, x: 500, y: 800, line: "lime", isLarge: true },
+            { id: 46, x: 1000, y: 700, line: "lime", isEnd: true }
+        ];
+
+        let activeNodeId = 1;
+        let visitedNodes = { 1: '#475569' };
+        let offset = { x: 0, y: 0 };
+        let isDragging = false;
+        let startPos = { x: 0, y: 0 };
+
+        const svg = document.getElementById('map-svg');
+        const viewport = document.getElementById('viewport-group');
+
+        function init() {
+            renderMask();
+            renderPaths();
+            renderNodes();
+            updateMarker();
+            setupDragging();
+            
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'SET_NODE') {
+                    setActiveNode(event.data.nodeId);
+                }
+            });
+        }
+
+        function renderMask() {
+            const maskContainer = document.getElementById('mask-circles');
+            stations.filter(s => s.isHub).forEach(hub => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", hub.x);
+                circle.setAttribute("cy", hub.y);
+                circle.setAttribute("r", "450");
+                circle.setAttribute("fill", "black");
+                maskContainer.appendChild(circle);
+            });
+        }
+
+        function getBezierPoint(t, p0, pc, p1) {
+            const x = Math.pow(1 - t, 2) * p0.x + 2 * (1 - t) * t * pc.x + Math.pow(t, 2) * p1.x;
+            const y = Math.pow(1 - t, 2) * p0.y + 2 * (1 - t) * t * pc.y + Math.pow(t, 2) * p1.y;
+            return { x, y };
+        }
+
+        function getBezierAngle(t, p0, pc, p1) {
+            const dx = 2 * (1 - t) * (pc.x - p0.x) + 2 * t * (p1.x - pc.x);
+            const dy = 2 * (1 - t) * (pc.y - p0.y) + 2 * t * (p1.y - pc.y);
+            return Math.atan2(dy, dx) * (180 / Math.PI);
+        }
+
+        function createPathString(ids) {
+            const pts = ids.map(id => stations.find(s => s.id === id)).filter(Boolean);
+            if (pts.length < 2) return { d: "", beacons: [] };
+
+            let d = `M ${pts[0].x} ${pts[0].y}`;
+            const beacons = [];
+
+            for (let i = 0; i < pts.length - 1; i++) {
+                const p0 = pts[i];
+                const p1 = pts[i + 1];
+                const mx = (p0.x + p1.x) / 2;
+                const my = (p0.y + p1.y) / 2;
+                const dx = p1.x - p0.x;
+                const dy = p1.y - p0.y;
+                const curveAmount = (p0.id === 31 && p1.id === 32) ? 0.01 : 0.16;
+                const pc = { x: mx + (dy * curveAmount), y: my - (dx * curveAmount) };
+                d += ` Q ${pc.x} ${pc.y}, ${p1.x} ${p1.y}`;
+                
+                [0.35, 0.75].forEach(t => {
+                    const point = getBezierPoint(t, p0, pc, p1);
+                    const angle = getBezierAngle(t, p0, pc, p1);
+                    beacons.push({ x: point.x, y: point.y, angle });
+                });
+            }
+            return { d, beacons };
+        }
+
+        function renderPaths() {
+            const pathLayer = document.getElementById('paths-layer');
+            const routeConfigs = [
+                { ids: [1, 2, 3, 4, 5, 6, 7], line: 'grey' },
+                { ids: [7, 8, 9, 10, 11, 12, 13], line: 'yellow' },
+                { ids: [13, 14, 15, 16], line: 'orange' },
+                { ids: [7, 17, 18, 19, 20, 21, 22, 23, 24], line: 'pink' },
+                { ids: [24, 25, 26, 27, 28, 29], line: 'purple' },
+                { ids: [24, 30, 31, 32, 23, 33, 34, 35, 36, 37, 38], line: 'cyan' },
+                { ids: [13, 39, 27, 41, 42, 23, 44, 45, 46], line: 'lime' }
+            ];
+
+            routeConfigs.forEach(conf => {
+                const { d, beacons } = createPathString(conf.ids);
+                const color = colours[conf.line];
+                const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                const bg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                bg.setAttribute("d", d);
+                bg.setAttribute("fill", "none");
+                bg.setAttribute("stroke", "#000");
+                bg.setAttribute("stroke-width", "50");
+                bg.setAttribute("stroke-opacity", "0.03");
+                bg.setAttribute("transform", "translate(4,4)");
+                
+                const main = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                main.setAttribute("d", d);
+                main.setAttribute("fill", "none");
+                main.setAttribute("stroke", color);
+                main.setAttribute("stroke-width", "50");
+                main.setAttribute("stroke-linecap", "round");
+
+                group.appendChild(bg);
+                group.appendChild(main);
+
+                beacons.forEach(b => {
+                    const arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    arrow.setAttribute("d", "M -16 -10 L 20 0 L -16 10 L -10 0 Z");
+                    arrow.setAttribute("fill", "white");
+                    arrow.setAttribute("transform", `translate(${b.x}, ${b.y}) rotate(${b.angle})`);
+                    group.appendChild(arrow);
+                });
+
+                pathLayer.appendChild(group);
+            });
+        }
+
+        function renderNodes() {
+            const layer = document.getElementById('nodes-layer');
+            layer.innerHTML = "";
+            stations.filter(s => !s.hidden).forEach(s => {
+                const visitedColor = visitedNodes[s.id];
+                const isActive = activeNodeId === s.id;
+                const isPuzzle = s.isLarge;
+                const size = s.isHub ? 450 : (s.isChoice ? 140 : (isPuzzle ? 95 : (s.isEnd ? 75 : 45)));
+                
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                g.setAttribute("class", "node");
+                g.onclick = () => setActiveNode(s.id);
+
+                const blob = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `M ${s.x-size} ${s.y} Q ${s.x-size} ${s.y-size}, ${s.x} ${s.y-size} Q ${s.x+size} ${s.y-size}, ${s.x+size} ${s.y} Q ${s.x+size} ${s.y+size}, ${s.x} ${s.y+size} Q ${s.x-size} ${s.y+size}, ${s.x-size} ${s.y}`;
+                blob.setAttribute("d", d);
+                
+                if (s.isHub) {
+                    blob.setAttribute("fill", "transparent");
+                    g.appendChild(blob);
+                } else {
+                    blob.setAttribute("fill", visitedColor || "white");
+                    blob.setAttribute("stroke", colours[s.line]);
+                    blob.setAttribute("stroke-width", isActive ? (s.isChoice || s.isEnd ? 22 : 18) : (s.isChoice || s.isEnd ? 12 : 8));
+                    g.appendChild(blob);
+
+                    // Add stripes for Choice nodes
+                    if (s.isChoice) {
+                        const stripePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        stripePath.setAttribute("d", d);
+                        stripePath.setAttribute("fill", "url(#choice-stripes)");
+                        stripePath.style.pointerEvents = "none";
+                        g.appendChild(stripePath);
+
+                        // Question Mark Icon (CircleHelp)
+                        const iconGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                        iconGroup.setAttribute("transform", `translate(${s.x - 70}, ${s.y - 70}) scale(5.8)`);
+                        iconGroup.style.pointerEvents = "none";
+                        const helpPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        // CircleHelp path data
+                        helpPath.setAttribute("d", "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-2.91-13a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.01 4h.01");
+                        helpPath.setAttribute("fill", "none");
+                        helpPath.setAttribute("stroke", visitedColor ? "white" : colours[s.line]);
+                        helpPath.setAttribute("stroke-width", "2.5");
+                        helpPath.setAttribute("stroke-linecap", "round");
+                        helpPath.setAttribute("stroke-linejoin", "round");
+                        iconGroup.appendChild(helpPath);
+                        g.appendChild(iconGroup);
+                    }
+
+                    // Puzzle Icon for large nodes
+                    if (isPuzzle && !s.isChoice) {
+                        const iconGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                        iconGroup.setAttribute("transform", `translate(${s.x - 53}, ${s.y - 53}) scale(4.4)`);
+                        iconGroup.style.pointerEvents = "none";
+                        const puzzlePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        // Puzzle icon path data
+                        puzzlePath.setAttribute("d", "M19.439 7.85c0-1.571-1.28-2.85-2.85-2.85a2.85 2.85 0 0 0-2.698 1.94 2.85 2.85 0 0 1-5.382 0 2.85 2.85 0 0 0-2.698-1.94c-1.571 0-2.85 1.279-2.85 2.85a2.85 2.85 0 0 0 1.94 2.698 2.85 2.85 0 0 1 0 5.382 2.85 2.85 0 0 0-1.94 2.698c0 1.571 1.279 2.85 2.85 2.85a2.85 2.85 0 0 0 2.698-1.94 2.85 2.85 0 0 1 5.382 0 2.85 2.85 0 0 0 2.698 1.94c1.571 0 2.85-1.279 2.85-2.85a2.85 2.85 0 0 0-1.94-2.698 2.85 2.85 0 0 1 0-5.382 2.85 2.85 0 0 0 1.94-2.698Z");
+                        puzzlePath.setAttribute("fill", "none");
+                        puzzlePath.setAttribute("stroke", visitedColor ? "white" : colours[s.line]);
+                        puzzlePath.setAttribute("stroke-width", "2.5");
+                        puzzlePath.setAttribute("stroke-linecap", "round");
+                        puzzlePath.setAttribute("stroke-linejoin", "round");
+                        iconGroup.appendChild(puzzlePath);
+                        g.appendChild(iconGroup);
+                    }
+
+                    // End indicator dashed circle
+                    if (s.isEnd) {
+                        const endCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        endCircle.setAttribute("cx", s.x);
+                        endCircle.setAttribute("cy", s.y);
+                        endCircle.setAttribute("r", size + 15);
+                        endCircle.setAttribute("fill", "none");
+                        endCircle.setAttribute("stroke", colours[s.line]);
+                        endCircle.setAttribute("stroke-width", "4");
+                        endCircle.setAttribute("stroke-dasharray", "8 6");
+                        g.appendChild(endCircle);
+                    }
+
+                    // Render node number for normal nodes
+                    if (!isPuzzle && !s.isHub && !s.isChoice && !s.isEnd) {
+                        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        text.setAttribute("x", s.x);
+                        text.setAttribute("y", s.y + 10);
+                        text.setAttribute("text-anchor", "middle");
+                        text.setAttribute("dominant-baseline", "middle");
+                        text.setAttribute("class", "text-6xl font-extrabold fill-slate-800");
+                        text.textContent = s.id;
+                        g.appendChild(text);
+                    }
+                }
+                layer.appendChild(g);
+            });
+        }
+
+        function updateMarker() {
+            const layer = document.getElementById('marker-layer');
+            layer.innerHTML = "";
+            const node = stations.find(s => s.id === activeNodeId);
+            if (!node) return;
+
+            const rootG = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            rootG.setAttribute("transform", `translate(${node.x}, ${node.y})`);
+            rootG.style.pointerEvents = "none";
+
+            const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            pulse.setAttribute("cx", "0");
+            pulse.setAttribute("cy", "0");
+            pulse.setAttribute("r", node.isHub ? 700 : 250);
+            pulse.setAttribute("fill", "none");
+            pulse.setAttribute("stroke", "#10b981");
+            pulse.setAttribute("stroke-width", "10");
+            pulse.setAttribute("class", "pulse-ring");
+
+            const animWrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            animWrapper.setAttribute("class", "marker-anim-wrapper");
+            
+            const pin = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pin.setAttribute("d", "M 0 0 C -30 -60 -50 -75 -50 -110 C -50 -138 -28 -160 0 -160 C 28 -160 50 -138 50 -110 C 50 -75 30 -60 0 0 Z");
+            pin.setAttribute("fill", "#059669");
+            pin.setAttribute("stroke", "#ffffff");
+            pin.setAttribute("stroke-width", "6");
+            const scale = node.isHub ? 3.5 : 2.0;
+            pin.setAttribute("transform", `scale(${scale})`);
+
+            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            dot.setAttribute("cx", "0");
+            dot.setAttribute("cy", node.isHub ? -380 : -220);
+            dot.setAttribute("r", node.isHub ? 55 : 30);
+            dot.setAttribute("fill", "#ffffff");
+
+            animWrapper.appendChild(pin);
+            animWrapper.appendChild(dot);
+            rootG.appendChild(pulse);
+            rootG.appendChild(animWrapper);
+            layer.appendChild(rootG);
+        }
+
+        function setActiveNode(id) {
+            const oldNode = stations.find(s => s.id === activeNodeId);
+            activeNodeId = id;
+            visitedNodes[id] = colours[oldNode?.line || 'grey'];
+            renderNodes();
+            updateMarker();
+        }
+
+        function setupDragging() {
+            const container = document.getElementById('map-container');
+            
+            const handleStart = (e) => {
+                isDragging = true;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const svgRect = svg.getBoundingClientRect();
+                const scaleX = 5400 / svgRect.width;
+                const scaleY = 5000 / svgRect.height;
+
+                startPos = { 
+                    x: clientX * scaleX - offset.x, 
+                    y: clientY * scaleY - offset.y 
+                };
+            };
+
+            const handleMove = (e) => {
+                if (!isDragging) return;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const svgRect = svg.getBoundingClientRect();
+                const scaleX = 5400 / svgRect.width;
+                const scaleY = 5000 / svgRect.height;
+
+                offset = { 
+                    x: clientX * scaleX - startPos.x, 
+                    y: clientY * scaleY - startPos.y 
+                };
+
+                viewport.setAttribute('transform', `translate(${offset.x}, ${offset.y + 500}) scale(0.9)`);
+            };
+
+            const handleEnd = () => isDragging = false;
+
+            container.addEventListener('mousedown', handleStart);
+            window.addEventListener('mousemove', handleMove);
+            window.addEventListener('mouseup', handleEnd);
+
+            container.addEventListener('touchstart', handleStart);
+            window.addEventListener('touchmove', handleMove);
+            window.addEventListener('touchend', handleEnd);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

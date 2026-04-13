@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laura's Adventure Map</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #86efac;
+            background-image: radial-gradient(#4ade80 2px, transparent 2px);
+            background-size: 40px 40px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-wrapper {
+            position: relative;
+            width: 1200px; 
+            height: 850px;
+            background-color: #ecfccb; /* Soft meadow */
+            border-radius: 40px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                inset 0 0 0 10px rgba(255,255,255,0.6);
+            overflow: hidden;
+            transform-origin: center center;
+        }
+
+        /* Organic Path Styling */
+        .path-container {
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.05));
+        }
+
+        /* Landmark Nodes */
+        .node {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            z-index: 20;
+        }
+        .node:hover {
+            transform: scale(1.15) translateY(-5px);
+            z-index: 50;
+        }
+        
+        /* Non-interactive Hub Visual */
+        .hub-visual {
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Node Labels */
+        .node-label {
+            text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 #fff, -2px 0 #fff, 0 4px 8px rgba(0,0,0,0.1);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            pointer-events: none;
+            white-space: pre-line;
+            text-align: center;
+            line-height: 1.1;
+            color: #374151;
+            transition: opacity 0.5s;
+        }
+
+        /* Avatar Animation */
+        .laura-avatar {
+            transition: all 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+            z-index: 40;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        /* Pulse Animation for Passage 9A */
+        @keyframes magic-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.7); }
+            50% { transform: scale(1.2); box-shadow: 0 0 0 20px rgba(20, 184, 166, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+        }
+        .node-pulse {
+            animation: magic-pulse 2s infinite;
+            border-color: #14b8a6 !important; /* Teal border */
+            z-index: 60 !important;
+        }
+
+        /* Secret Reveal Fade */
+        @keyframes reveal-fade {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .secret-reveal {
+            animation: reveal-fade 0.8s ease-out forwards;
+        }
+
+        /* Modal Soft Entry */
+        @keyframes modal-in {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-enter {
+            animation: modal-in 0.5s ease-out forwards;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="root" class="w-full h-full flex justify-center items-center"></div>
+
+    <script type="text/babel">
+        
+        // --- COLORS & THEMES ---
+        const THEMES = {
+            main:   { stroke: "#94a3b8", fill: "bg-slate-100", text: "text-slate-600" },
+            pathA:  { stroke: "#eab308", fill: "bg-yellow-50", text: "text-yellow-700" }, 
+            pathA1: { stroke: "#22c55e", fill: "bg-green-50", text: "text-green-700" }, 
+            pathA2: { stroke: "#14b8a6", fill: "bg-teal-50", text: "text-teal-700" }, // Secret
+            pathB:  { stroke: "#ec4899", fill: "bg-pink-50", text: "text-pink-700" }, 
+            pathB1: { stroke: "#a855f7", fill: "bg-purple-50", text: "text-purple-700" }, 
+            pathB2: { stroke: "#3b82f6", fill: "bg-blue-50", text: "text-blue-700" } 
+        };
+
+        const mapNodes = [
+            // --- MAIN ---
+            { id: "1", label: "HOME", type: "house", group: "main", x: 60, y: 400, next: ["2"] },
+            { id: "2", label: "PACKBAG", type: "puzzle", group: "main", x: 150, y: 400, next: ["3"] },
+            { id: "3", label: "FOREST", type: "tree", group: "main", x: 240, y: 400, next: ["4"] },
+            { id: "4", label: "CHOOSE!", type: "decision", group: "main", x: 330, y: 400, next: ["5A", "12B"] },
+
+            // --- PATH A: FIREFLIES (Yellow) ---
+            { id: "5A", label: "BEAVER", type: "animal", group: "pathA", x: 400, y: 280, next: ["6A"] },
+            { id: "6A", label: "BERRIES", type: "puzzle", group: "pathA", x: 480, y: 240, next: ["7A"] },
+            { id: "7A", label: "OLD TREE", type: "tree", group: "pathA", x: 580, y: 200, next: ["8A"] },
+            { id: "8A", label: "MATCHING", type: "puzzle", group: "pathA", x: 680, y: 160, next: ["9A"] },
+            { id: "9A", label: "PASSAGE", type: "location", group: "pathA", x: 780, y: 140, next: ["10A1", "27A2"] },
+
+            // --- PATH A1: MUSHROOMS (Green) ---
+            { id: "10A1", label: "GIANT\nMUSHROOMS", type: "mushroom", group: "pathA1", x: 920, y: 100, next: ["11A1"] },
+            { id: "11A1", label: "END A1", type: "star", group: "pathA1", x: 1060, y: 100, next: [] },
+
+            // --- PATH B: PINK RIVER (Pink) ---
+            { id: "12B", label: "CROSSING", type: "puzzle", group: "pathB", x: 400, y: 520, next: ["13B"] },
+            { id: "13B", label: "HUGO", type: "animal", group: "pathB", x: 480, y: 560, next: ["14B"] },
+            { id: "14B", label: "SNACK", type: "puzzle", group: "pathB", x: 560, y: 600, next: ["15B"] },
+            { id: "15B", label: "SQUIRREL", type: "animal", group: "pathB", x: 640, y: 620, next: ["16B_Pink"] }, // Points to Satellite
+
+            // --- FRUIT TREE HUB (Broken into components) ---
+            
+            // 1. Central Visual Anchor (Non-Interactive)
+            { 
+                id: "16B", label: "FRUIT\nTREES", type: "tree", group: "pathB", x: 700, y: 500, isHubVisual: true,
+                next: [], 
+            },
+
+            // 2. Pink Path Entry (Left)
+            { id: "16B_Pink", label: "", type: "location", group: "pathB", x: 640, y: 500, next: ["17B"] }, 
+            
+            // 3. Blue Path Entry (Bottom Right)
+            { id: "16B_Blue", label: "", type: "location", group: "pathB2", x: 760, y: 560, next: ["23B2"] }, 
+            
+            // 4. Secret Path Entry (Top Right)
+            { id: "16B_Teal", label: "", type: "location", group: "pathA2", x: 760, y: 440, next: ["29A2"], isSecret: true },
+
+            // --- NEW PATHS DECISION ---
+            { id: "17B", label: "NEW\nPATHS", type: "decision", group: "pathB", x: 820, y: 500, next: ["18B1", "22B2"] },
+
+            // --- PATH B1: PURPLE WATERFALL (Purple) ---
+            { id: "18B1", label: "BRIDGE", type: "location", group: "pathB1", x: 940, y: 480, next: ["19B1"] },
+            { id: "19B1", label: "PUZZLE", type: "puzzle", group: "pathB1", x: 1060, y: 450, next: ["20B1"] },
+            
+            // --- SHARED HUB: 20B1 PURPLE WATERFALL (Purple/Mixed) ---
+            { 
+                id: "20B1", label: "PURPLE\nWATERFALL", type: "water", group: "pathB1", x: 1060, y: 320, isHub: true,
+                next: ["21B1", "28A2"],
+                routes: { "19B1": ["21B1"], "27A2": ["28A2"] }
+            },
+            { id: "21B1", label: "END B1", type: "star", group: "pathB1", x: 1150, y: 320, next: [] },
+
+            // --- PATH B2: SILVER CAVE (Blue) ---
+            { id: "22B2", label: "CAVE\nDOOR", type: "cave", group: "pathB2", x: 820, y: 600, next: ["16B_Blue"] }, // Points to Satellite
+            { id: "23B2", label: "INSIDE\nCAVE", type: "cave", group: "pathB2", x: 700, y: 720, next: ["24B2"] },
+            { id: "24B2", label: "OUTSIDE", type: "location", group: "pathB2", x: 820, y: 750, next: ["25B2"] },
+            { id: "25B2", label: "OPEN\nBOX", type: "puzzle", group: "pathB2", x: 940, y: 750, next: ["26B2"] },
+            { id: "26B2", label: "END B2", type: "star", group: "pathB2", x: 1060, y: 750, next: [] },
+
+            // --- PATH A2: SECRET PATH (Teal) ---
+            { id: "27A2", label: "SECRET\nGARDEN", type: "flower", group: "pathA2", x: 920, y: 220, next: ["20B1"], isSecret: true },
+            { id: "28A2", label: "SECRET\nCAVE", type: "cave", group: "pathA2", x: 900, y: 400, next: ["16B_Teal"], isSecret: true }, // Points to Satellite
+            { id: "29A2", label: "THE\nCRYSTAL", type: "crystal", group: "pathA2", x: 580, y: 420, next: [], isSecret: true },
+        ];
+
+        // --- ICONS ---
+        const Icons = {
+            house: "🏠",
+            tree: "🌳",
+            animal: "🐾",
+            mushroom: "🍄",
+            flower: "🌺",
+            cave: "🪨",
+            water: "💧",
+            crystal: "💎",
+            location: "📍",
+            puzzle: "🧩",
+            decision: "🚩",
+            star: "⭐"
+        };
+
+        const LauraAvatar = ({ x, y }) => (
+            <div 
+                className="laura-avatar absolute flex flex-col items-center"
+                style={{ left: x, top: y, width: 0, height: 0, marginTop: '-20px' }}
+            >
+                <div className="relative transform hover:scale-110 transition-transform">
+                    {/* SVG Laura */}
+                    <svg width="40" height="40" viewBox="0 0 40 40">
+                        <circle cx="20" cy="20" r="18" fill="#fbbf24" stroke="#b45309" strokeWidth="2" />
+                        <circle cx="20" cy="20" r="14" fill="#fef3c7" />
+                        <circle cx="15" cy="18" r="2" fill="#000" />
+                        <circle cx="25" cy="18" r="2" fill="#000" />
+                        <path d="M 16 24 Q 20 28 24 24" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    </svg>
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            const [currentId, setCurrentId] = React.useState("1");
+            const [history, setHistory] = React.useState(["1"]);
+            const [completedEndings, setCompletedEndings] = React.useState([]);
+            const [scale, setScale] = React.useState(1);
+            const [showReset, setShowReset] = React.useState(false);
+
+            React.useEffect(() => {
+                const handleResize = () => {
+                    const padding = 40;
+                    const scaleX = (window.innerWidth - padding) / 1200;
+                    const scaleY = (window.innerHeight - padding) / 850;
+                    setScale(Math.min(scaleX, scaleY, 1.1));
+                };
+                window.addEventListener('resize', handleResize);
+                handleResize();
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+
+            // --- UNLOCK LOGIC ---
+            const requiredEndings = ["11A1", "21B1", "26B2"];
+            const isSecretUnlocked = requiredEndings.every(end => completedEndings.includes(end));
+
+            const getNode = (id) => mapNodes.find(n => n.id === id);
+
+            const handleNodeClick = (nodeId) => {
+                if (showReset) return;
+                
+                // Prevent clicking the visual hub
+                const targetNode = getNode(nodeId);
+                if (targetNode.isHubVisual) return;
+
+                if (currentId === nodeId) return;
+
+                const currentNode = getNode(currentId);
+                
+                // Secret Guard
+                if (targetNode.isSecret && !isSecretUnlocked) return;
+
+                // Backtracking
+                if (history.includes(nodeId)) {
+                    setCurrentId(nodeId);
+                    setHistory(prev => [...prev, nodeId]);
+                    return;
+                }
+
+                // Connections
+                const isPhysicallyConnected = currentNode.next.includes(nodeId);
+                
+                if (isPhysicallyConnected) {
+                    // Routing Logic
+                    if (currentNode.routes) {
+                        const previousId = history.length > 1 ? history[history.length - 2] : null;
+                        if (previousId && currentNode.routes[previousId]) {
+                            const allowedNextNodes = currentNode.routes[previousId];
+                            if (!allowedNextNodes.includes(nodeId)) return;
+                        }
+                    }
+
+                    // Move
+                    setCurrentId(nodeId);
+                    setHistory(prev => [...prev, nodeId]);
+
+                    // Check Endings
+                    if (targetNode.type === 'star' || targetNode.type === 'crystal') {
+                         if (!completedEndings.includes(nodeId)) {
+                             setCompletedEndings(prev => [...prev, nodeId]);
+                         }
+                         
+                         setTimeout(() => setShowReset(true), 2500); 
+                    }
+                }
+            };
+
+            const resetMap = () => {
+                setCurrentId("1");
+                setHistory(["1"]);
+                setShowReset(false);
+            };
+
+            const continueExploring = () => {
+                setShowReset(false);
+                // Auto-Backtrack to last decision
+                const reversedHistory = [...history].reverse();
+                const lastDecisionId = reversedHistory.find(id => {
+                    const n = getNode(id);
+                    return n.type === 'decision';
+                });
+                
+                if (lastDecisionId) {
+                    setCurrentId(lastDecisionId);
+                    setHistory(prev => [...prev, lastDecisionId]);
+                } else {
+                    setCurrentId("1");
+                    setHistory(prev => [...prev, "1"]);
+                }
+            };
+
+            const getNodeStatus = (nodeId) => {
+                if (currentId === nodeId) return "active";
+                if (history.includes(nodeId)) return "visited";
+                if (completedEndings.includes(nodeId)) return "completed";
+                return "locked";
+            };
+
+            // --- PROGRESSIVE VISIBILITY ---
+            const isNodeVisible = (nodeId) => {
+                const node = getNode(nodeId);
+                if (!node.isSecret) return true; 
+                if (!isSecretUnlocked) return false;
+
+                if (nodeId === '27A2') return history.includes('9A');
+                if (nodeId === '28A2') return history.includes('27A2');
+                if (nodeId === '16B_Teal') return history.includes('28A2');
+                if (nodeId === '29A2') return history.includes('16B_Teal');
+                
+                return false;
+            };
+
+            // --- EDGE COLOR ---
+            const getEdgeColor = (node, target, isTraversed) => {
+                let theme = THEMES[target.group] || THEMES.main;
+                
+                // Override shared connection color
+                if (node.id === '27A2' && target.id === '20B1') theme = THEMES.pathA2;
+
+                return isTraversed ? theme.stroke : "#cbd5e1";
+            };
+
+            return (
+                <div className="map-wrapper" style={{ transform: `scale(${scale})` }}>
+                    
+                    {/* PATHS LAYER */}
+                    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{zIndex: 0}}>
+                        {mapNodes.map(node => {
+                            if (!isNodeVisible(node.id)) return null;
+
+                            return node.next.map(nextId => {
+                                const target = getNode(nextId);
+                                if (!target) return null;
+                                if (!isNodeVisible(target.id)) return null;
+
+                                let isTraversed = false;
+                                for(let i=0; i<history.length-1; i++){
+                                    if(history[i] === node.id && history[i+1] === nextId) {
+                                        isTraversed = true;
+                                        break;
+                                    }
+                                }
+
+                                const strokeColor = getEdgeColor(node, target, isTraversed);
+
+                                const x1 = node.x; const y1 = node.y;
+                                const x2 = target.x; const y2 = target.y;
+
+                                const dx = x2 - x1; const dy = y2 - y1;
+                                let cx = (x1 + x2) / 2; let cy = (y1 + y2) / 2;
+                                if (x2 < x1) { cy = y1 + 90; cx = (x1 + x2) / 2; } 
+                                else if (Math.abs(dy) > 50) { cx = x1 + dx * 0.15; }
+
+                                const pathD = `M ${x1} ${y1} Q ${cx} ${cy}, ${x2} ${y2}`;
+
+                                return (
+                                    <g key={`${node.id}-${nextId}`} className="path-container">
+                                        <path d={pathD} stroke="rgba(255,255,255,0.7)" strokeWidth="22" fill="none" strokeLinecap="round" />
+                                        <path 
+                                            d={pathD}
+                                            stroke={strokeColor} 
+                                            strokeWidth="6" 
+                                            fill="none"
+                                            strokeDasharray="10,14"
+                                            strokeLinecap="round"
+                                            className="transition-colors duration-500"
+                                        />
+                                    </g>
+                                );
+                            });
+                        })}
+                    </svg>
+
+                    {/* NODES */}
+                    {mapNodes.map(node => {
+                        const visible = isNodeVisible(node.id);
+                        if (!visible) return null;
+
+                        const status = getNodeStatus(node.id);
+                        const theme = THEMES[node.group] || THEMES.main;
+
+                        // Pulse start of secret path
+                        const isSecretStart = node.id === '9A';
+                        const showPulse = isSecretStart && isSecretUnlocked && !history.includes('27A2');
+
+                        let circleClasses = `rounded-full flex items-center justify-center transition-all duration-300 `;
+                        
+                        // Size logic
+                        if (node.isHubVisual) {
+                            circleClasses += `w-20 h-20 `;
+                        } else {
+                            circleClasses += `w-14 h-14 `;
+                        }
+                        
+                        if (status === "locked" && !node.isHubVisual) {
+                            circleClasses += `bg-white/50 grayscale opacity-70`;
+                        } else if ((status === "visited" || status === "completed") && !node.isHubVisual) {
+                            circleClasses += `${theme.fill} shadow-sm border-2 border-white`;
+                        } else if (status === "active" && !node.isHubVisual) {
+                            circleClasses += `bg-white shadow-xl scale-125 border-4 border-yellow-300`;
+                        } else if (node.isHubVisual) {
+                            circleClasses += `hub-visual`; // No styling for interaction
+                        }
+
+                        if (showPulse) {
+                            circleClasses += ` node-pulse`;
+                        }
+
+                        const animClass = node.isSecret ? 'secret-reveal' : '';
+                        const marginOffset = node.isHubVisual ? '-40px' : '-28px';
+
+                        return (
+                            <div 
+                                key={node.id}
+                                onClick={() => handleNodeClick(node.id)}
+                                className={`absolute flex flex-col items-center justify-center group node ${animClass}`}
+                                style={{ left: node.x, top: node.y, width: 0, height: 0 }}
+                            >
+                                <div className={circleClasses} style={{marginLeft: marginOffset, marginTop: marginOffset}}>
+                                    <span className={`${node.isHubVisual ? 'text-5xl' : 'text-3xl'} select-none filter drop-shadow-sm`}>
+                                        {Icons[node.type] || Icons.location}
+                                    </span>
+                                </div>
+                                <span className={`absolute mt-16 text-xs uppercase px-2 py-1 rounded-md node-label ${status === 'locked' && !node.isHubVisual ? 'opacity-40' : ''}`}>
+                                    {node.label}
+                                </span>
+                            </div>
+                        );
+                    })}
+
+                    {/* AVATAR */}
+                    <LauraAvatar x={getNode(currentId)?.x} y={getNode(currentId)?.y} />
+
+                    {/* COMPLETION POPUP */}
+                    {showReset && (
+                        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-[100] modal-enter">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm border-8 border-yellow-300">
+                                <div className="text-6xl mb-4">🎉</div>
+                                <h2 className="text-3xl font-black text-gray-700 mb-2">Great Job!</h2>
+                                <p className="text-gray-500 mb-6 font-bold">You reached the end of this path!</p>
+                                
+                                <div className="space-y-4">
+                                    <button 
+                                        onClick={continueExploring}
+                                        className="w-full py-4 px-6 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl shadow-lg border-b-4 border-blue-700 active:border-b-0 active:translate-y-1 transition-all"
+                                    >
+                                        Look for more Crystals
+                                    </button>
+                                    <button 
+                                        onClick={resetMap}
+                                        className="w-full py-4 px-6 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-2xl shadow-lg border-b-4 border-yellow-600 active:border-b-0 active:translate-y-1 transition-all"
+                                    >
+                                        Start From Home
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* SECRET UNLOCK NOTIFICATION */}
+                    {isSecretUnlocked && !completedEndings.includes('29A2') && (
+                        <div className="absolute top-24 right-10 z-50 secret-reveal cursor-pointer">
+                            <div className="bg-teal-400 text-white px-6 py-4 rounded-3xl font-black shadow-xl border-4 border-white text-xl transform rotate-3">
+                                ✨ SECRET PATH OPEN! ✨
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

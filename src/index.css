@@ -1,0 +1,325 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Quicksand', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-baloo {
+    font-family: 'Baloo 2', cursive;
+  }
+}
+
+/* Dynamic Themes and Backgrounds */
+.theme-morning {
+  background: linear-gradient(135deg, #e0f2fe 0%, #fff7ed 50%, #fef3c7 100%);
+  transition: background 2s ease-in-out;
+}
+
+.theme-afternoon {
+  background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #fcd34d 100%);
+  transition: background 2s ease-in-out;
+}
+
+.theme-evening {
+  background: linear-gradient(135deg, #fb923c 0%, #c084fc 50%, #6366f1 100%);
+  transition: background 2s ease-in-out;
+}
+
+.theme-night {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  transition: background 2s ease-in-out;
+}
+
+.theme-dark {
+  background-color: #020617;
+  transition: background 2s ease-in-out;
+}
+
+@layer utilities {
+  .animate-shake {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+  }
+}
+
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translate3d(-2px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(4px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-8px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(8px, 0, 0);
+  }
+}
+
+@keyframes ping-slow {
+
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Magic Sky Twinkling Stars */
+.bg-magic-stars {
+  position: absolute;
+  inset: -100px;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #fff, rgba(255, 255, 255, 0)),
+    radial-gradient(3px 3px at 80px 120px, #fff, rgba(255, 255, 255, 0)),
+    radial-gradient(2px 2px at 150px 40px, #fff, rgba(255, 255, 255, 0)),
+    radial-gradient(2px 2px at 250px 200px, #fff, rgba(255, 255, 255, 0));
+  background-repeat: repeat;
+  background-size: 300px 300px;
+  animation: stars-twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes stars-twinkle {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1.1) rotate(2deg);
+    opacity: 0.8;
+  }
+}
+
+/* Page Transitions */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+
+/* 3D Utilities */
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Click Indicator Hint */
+@keyframes pulsing-hint {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+.click-hint {
+  animation: pulsing-hint 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6));
+}
+
+@keyframes wave-move {
+  0% {
+    transform: translate(0, 0) scaleY(1);
+  }
+
+  50% {
+    transform: translate(-20px, 0) scaleY(1.05);
+  }
+
+  100% {
+    transform: translate(0, 0) scaleY(1);
+  }
+}
+
+@keyframes wave-drift-right {
+  0% {
+    transform: translate(-60px, 20px) scaleX(1.1) scaleY(1.1);
+  }
+
+  100% {
+    transform: translate(60px, -20px) scaleX(1.2) scaleY(1.2);
+  }
+}
+
+@keyframes wave-drift-left {
+  0% {
+    transform: translate(60px, -20px) scaleX(1.2) scaleY(1.2);
+  }
+
+  100% {
+    transform: translate(-60px, 20px) scaleX(1.1) scaleY(1.1);
+  }
+}
+
+.animate-wave-slow {
+  animation: wave-move 15s ease-in-out infinite;
+}
+
+.animate-wave-fast {
+  animation: wave-move 10s ease-in-out infinite reverse;
+}
+
+/* --- High-End Illustrative Book UI --- */
+
+/* The outer cover of the book */
+.real-book-frame {
+  @apply relative bg-green-900 rounded-[1.5rem] p-2 md:p-4 w-full max-w-[1440px] mx-auto;
+  box-shadow:
+    0 10px 30px -5px rgba(0, 50, 20, 0.2),
+    0 20px 40px -10px rgba(0, 30, 10, 0.3);
+  border: 4px solid #064e3b;
+  transition: all 0.5s ease-out;
+}
+
+/* Red Bookmark Ribbon (Larger for Icon) */
+.bookmark-ribbon {
+  @apply absolute top-[-20px] left-1/2 -translate-x-1/2 w-16 h-[120px] bg-rose-500 z-[50] flex flex-col items-center justify-start pt-6;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 90%, 0 100%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 4px 4px 0 0;
+  transition: all 0.3s ease;
+}
+
+.bookmark-icon-btn {
+  @apply text-white/95 hover:text-white transition-all transform hover:scale-125 active:scale-90 cursor-pointer flex flex-col items-center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.bookmark-icon-btn:hover {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+}
+
+.bookmark-ribbon-shadow {
+  @apply absolute top-[-25px] left-1/2 -translate-x-1/2 w-16 h-4 bg-black/20 blur-sm z-[40];
+}
+
+/* Stylized Page Depth */
+.page-stack-left {
+  @apply absolute left-1 top-1 bottom-1 w-4 bg-gray-50 rounded-l-md z-0;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.page-stack-right {
+  @apply absolute right-1 top-1 bottom-1 w-4 bg-gray-50 rounded-r-md z-0;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Settings Icons (Clean & Playful) */
+.setting-circle {
+  @apply w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md transition-all hover:scale-110 active:scale-90 border-4 border-white pointer-events-auto;
+}
+
+.setting-lime {
+  @apply bg-lime-400;
+}
+
+.setting-blue {
+  @apply bg-sky-400;
+}
+
+.setting-green {
+  @apply bg-emerald-500;
+}
+
+.setting-orange {
+  @apply bg-orange-500;
+}
+
+/* The Central Spine (Subtle & Illustrative) */
+.book-gutter {
+  @apply absolute left-1/2 top-0 bottom-0 w-12 z-40 transform -translate-x-1/2 pointer-events-none;
+  background: linear-gradient(to right,
+      rgba(0, 0, 0, 0.03) 0%,
+      rgba(0, 0, 0, 0.12) 48%,
+      rgba(0, 0, 0, 0.2) 50%,
+      rgba(0, 0, 0, 0.12) 52%,
+      rgba(0, 0, 0, 0.03) 100%);
+}
+
+/* Content Page Polish */
+.book-page-flat {
+  @apply bg-[#fcfcfc] shadow-inner relative overflow-hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Magic Words Animations */
+@keyframes magic-word-wiggle {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-2deg) scale(1.05);
+  }
+
+  75% {
+    transform: rotate(2deg) scale(1.05);
+  }
+}
+
+.magic-word-btn:hover .relative.z-10 {
+  animation: magic-word-wiggle 0.4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
+.magic-word-btn:hover .absolute.inset-0 {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
