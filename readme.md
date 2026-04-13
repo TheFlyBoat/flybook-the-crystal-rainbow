@@ -3,10 +3,12 @@
 An interactive digital storybook for children that combines branching narrative, simple puzzles, narration, and playful exploration in a web-based reading experience.
 
 ## Overview
-My Magic Book
-**FlyBook – Laura and the Crystal Rainbow** is a story-led web app designed for children aged 5–7. It blends picture-book storytelling with interactive mechanics such as branching choices, puzzle moments, animated feedback, and a secret path.
 
-Rather than behaving like a static ebook, My Magic Book is structured as an interactive reading experience. Children move through the story, make decisions, complete simple tasks, and unlock moments of discovery as they follow Laura and Lilo through a magical adventure.
+**FlyBook – Laura and the Crystal Rainbow** is a story-led web app designed for children aged 5–7. It blends picture-book storytelling with interactive mechanics such as branching choices, puzzle moments, animated feedback, and progress-based exploration.
+
+Rather than behaving like a static ebook, FlyBook is structured as an interactive reading experience. Children move through the story, make decisions, complete simple tasks, and unlock moments of discovery as they follow Laura and Lilo through a magical adventure.
+
+The project combines authored storytelling, custom interaction design, and a hands-on visual direction process. While generative AI was used as part of the image workflow, the final visual language, refinement, and finishing decisions were directed manually as part of the creative process.
 
 ## The Problem
 
@@ -16,7 +18,7 @@ This project was designed to explore a better middle ground: a story-first exper
 
 ## The Solution
 
-My Magic Book A.k.a FlyBook: Laura and the Crystal Rainbow combines:
+FlyBook combines:
 
 - a guided story experience
 - branching narrative paths
@@ -41,11 +43,11 @@ The result is an interactive book designed to feel playful, readable, and intuit
 - Animated visual feedback
 - Responsive interface for web use
 - Modular content structure for story expansion
-- Persistent progress and Interactive Map
+- Persistent progress and interactive map
 
 ## Project Goals
 
-This project was created to explore new AI tools to create Interactive apps and experiment how a digital storybook can become a richer product experience without losing clarity, pacing, or charm.
+This project explores how a digital storybook can become a richer interactive experience without losing clarity, pacing, or charm.
 
 The main goals were:
 
@@ -53,7 +55,35 @@ The main goals were:
 - support narrative progression through simple game mechanics
 - create a polished visual experience in the browser
 - build a reusable structure for future pages, puzzles, and story branches
-- Create, Develop and Deploy an web app from start to finish using the current ai tools avaiable. 
+- use AI-assisted workflows to support prototyping, implementation, and iterative refinement
+
+## My Role
+
+I led the project across concept, story interaction design, visual direction, product structure, and implementation decisions.
+
+This included:
+
+- defining the interactive story format
+- shaping the reading and puzzle experience
+- leading the visual direction of the project, including colour, shape, atmosphere, and overall look and feel
+- directing the image creation workflow, using generative AI as part of the process and then refining and finishing assets by hand
+- designing the interactive map and the broader navigation experience
+- structuring the app as a modular web product
+- guiding the narrative flow, UI behaviour, and overall product direction
+- using AI-assisted workflows to accelerate prototyping and development
+
+## Product Structure
+
+The project is built as a modular front-end application in which story content, interaction logic, and interface behaviour work together as a single reading system.
+
+Key elements include:
+
+- story page rendering
+- branching paths
+- puzzle and mini-game moments
+- animated transitions and feedback
+- progress and reward logic
+- reusable interface components
 
 ## Tech Stack
 
@@ -88,17 +118,12 @@ Then open the local development URL shown in the terminal.
 
 ## Live Demo
 
-book.flyboat.uk
+[book.flyboat.uk](https://book.flyboat.uk/)
 
-## Repository Status
+## Why This Project Matters
 
-Complete finished project with improvements opportunities.
+FlyBook explores how digital storytelling for children can become more engaging without losing simplicity, clarity, or emotional flow.
 
-## Current Priorities
+Its value lies in combining narrative, interaction, and visual design in a way that supports the story rather than interrupting it. The project uses choices, puzzles, and feedback as part of the reading experience, aiming to create something that feels closer to an interactive picture-book than a conventional game.
 
-improve responsiveess
-try new features
-be happy
-
-## FlyBook 
-Is part of FlyBoat Creative my (Adam) personal R&D lab to learn and experiment exploring how AI tools can make digital storytelling for children, adults and teams to become more engaging without losing simplicity, clarity, or emotional flow.
+At its core, FlyBook is about making children’s digital reading feel more magical, participatory, and thoughtfully designed.
