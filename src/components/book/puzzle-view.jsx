@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, XCircle, Zap, Hand } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { puzzleBadges } from "from "../../data/badge-data.jsx"";
-import { useBook } from "from "../../context/book-context"";
+
+import { useBook } from "../../context/book-context";
 import "@fontsource/quicksand/500.css";
 import "@fontsource/quicksand/700.css";
 
@@ -947,7 +947,6 @@ const PuzzleView = ({
             <div className="w-full h-full pointer-events-auto">
                 {/* Final Success Overlay */}
                 {puzzleSolved && (() => {
-                    const badge = puzzleBadges.find(b => b.id === currentPageData.id);
                     // Split feedbackText into header and subtext
                     const parts = feedbackText.split(/([!?.]{1,2}\s+)/);
                     const headerText = parts[0] + (parts[1] || '').trim();
@@ -957,32 +956,19 @@ const PuzzleView = ({
                         <div className="absolute inset-0 z-50 animate-fade-in flex items-center justify-center p-8 text-center pointer-events-auto">
                             <div className="absolute inset-0 w-full h-full">
                                 <img loading="lazy"
-                                    src=""/assets/puzzles/well-done-banner.png""
+                                    src="/assets/puzzles/well-done-banner.png"
                                     alt="Well Done!"
                                     className="w-full h-full object-cover shadow-2xl"
                                 />
                             </div>
                             <div className="relative z-10 flex flex-col items-center justify-center">
-                                {badge && (
-                                    <div className="mb-4 animate-bounce-slow">
-                                        <div className={`relative p-4 rounded-full shadow-lg border-4 border-white/50 ${badge.color} text-white`}>
-                                            {React.cloneElement(badge.icon, { size: 48, strokeWidth: 2.5 })}
-                                            <div className="absolute -top-2 -right-2 bg-yellow-400 rounded-full p-1 text-white shadow-md ring-2 ring-white">
-                                                <Zap size={16} fill="currentColor" />
-                                            </div>
-                                        </div>
-                                        <span className="mt-2 block text-[10px] font-black uppercase tracking-[0.2em] text-[#451a03] opacity-60">
-                                            {badge.label} Badge Earned!
-                                        </span>
-                                    </div>
-                                )}
                                 <div className="transform -rotate-1 max-w-xl mx-auto px-4 flex flex-col items-center gap-4">
                                     <h2 className="text-[#451a03] font-serif font-black text-6xl md:text-7xl lg:text-8xl drop-shadow-md tracking-tight">
                                         {headerText}
                                     </h2>
                                     {subText && (
                                         <p className="text-[#451a03]/90 font-bold text-2xl md:text-3xl mt-4 max-w-lg leading-relaxed text-center"
-                                            style={{ fontFamily: '"Quicksand", sans-serif' }}>
+                                            style={{ fontFamily: "'Quicksand', sans-serif" }}>
                                             {subText}
                                         </p>
                                     )}

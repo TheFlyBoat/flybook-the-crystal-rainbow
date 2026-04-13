@@ -1,6 +1,6 @@
 import React from 'react';
-import { useBook } from "from "../../context/book-context"";
-import { charactersData } from "from "../../data/characters-data"";
+import { useBook } from "../../context/book-context";
+import { charactersData } from "../../data/characters-data";
 import { Users, Star } from 'lucide-react';
 
 const FriendsSidebar = () => {

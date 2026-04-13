@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Hand } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useBook } from "from "../../context/book-context"";
+import { useBook } from "../../context/book-context";
 
 const MediaRenderer = ({ data, isSolved, isLeftPage }) => {
     const { isInteractionActive, setIsInteractionActive, isNarrationPlaying } = useBook();

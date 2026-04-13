@@ -1,6 +1,6 @@
 import React from 'react';
-import { useBook } from "from "../../context/book-context"";
-import BackgroundShapes from "from "./background-shapes"";
+import { useBook } from "../../context/book-context";
+import BackgroundShapes from "./background-shapes";
 
 const ThemeWrapper = ({ children }) => {
     const { getThemeClass } = useBook();

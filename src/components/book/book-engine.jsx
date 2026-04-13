@@ -1,19 +1,19 @@
 import React from 'react';
-import { useBook } from "from "../../context/book-context"";
-import { Suspense, lazy, useState } from 'react';
-import MediaRenderer from "from "./media-renderer"";
-import ContentArea from "from "./content-area"";
-import { PageCurl, PageCurlBack } from "from "./page-curl"";
-import CoverPage from "from "./cover-page"";
+import { useBook } from "../../context/book-context";
+import { useState } from 'react';
+import MediaRenderer from "./media-renderer";
+import ContentArea from "./content-area";
+import { PageCurl, PageCurlBack } from "./page-curl";
+import CoverPage from "./cover-page";
 import { PlayCircle, GitBranch, MapPin } from 'lucide-react';
-const PuzzleView = lazy(() => import('./PuzzleView'));
-const ProgressMap = lazy(() => import('../interface/ProgressMap'));
-const BalloonsAnimation = lazy(() => import('../interface/BalloonsAnimation'));
-const RainbowGlowEffect = lazy(() => import('../interface/RainbowGlowEffect'));
-const EngravedRiddle = lazy(() => import('../interface/EngravedRiddle'));
-const MagicTranslation = lazy(() => import('../interface/MagicTranslation'));
-const RainbowOverlay = lazy(() => import('./RainbowOverlay'));
-const OnboardingView = lazy(() => import('./OnboardingView'));
+import PuzzleView from './puzzle-view';
+import ProgressMap from '../interface/progress-map';
+import BalloonsAnimation from '../interface/balloons-animation';
+import RainbowGlowEffect from '../interface/rainbow-glow-effect';
+import EngravedRiddle from '../interface/engraved-riddle';
+import MagicTranslation from '../interface/magic-translation';
+import RainbowOverlay from './rainbow-overlay';
+import OnboardingView from './onboarding-view';
 
 const BookEngine = () => {
     const {
@@ -157,7 +157,7 @@ const BookEngine = () => {
                     <div className={`w-full h-full relative ${isImageOnRight ? 'px-8 md:px-16' : ''}`}>
                         {isImageOnRight ? (
                             currentPageData.id === 'dedication' ? (
-                                <Suspense fallback={null}><OnboardingView /></Suspense>
+                                <OnboardingView />
                             ) : (
                                 <ContentArea
                                     data={currentPageData}
@@ -172,20 +172,18 @@ const BookEngine = () => {
                         ) : (
                             <>
                                 <MediaRenderer data={currentPageData} isSolved={puzzleSolved} isLeftPage={true} />
-                                <Suspense fallback={null}>
-                                    {(isPuzzle || isInteraction) && (
-                                        <PuzzleView
-                                            currentPageData={currentPageData}
-                                            puzzleSolved={puzzleSolved}
-                                            handlePuzzleInteraction={handlePuzzleInteraction}
-                                            goToNextPage={goToNextPage}
-                                            feedbackText={feedbackText}
-                                            isSoundOn={isSoundEffectsOn}
-                                        />
-                                    )}
-                                    {currentPageData.id === 'page-42' && <EngravedRiddle />}
-                                    {currentPageData.id === 'page-44' && <MagicTranslation />}
-                                </Suspense>
+                                {(isPuzzle || isInteraction) && (
+                                    <PuzzleView
+                                        currentPageData={currentPageData}
+                                        puzzleSolved={puzzleSolved}
+                                        handlePuzzleInteraction={handlePuzzleInteraction}
+                                        goToNextPage={goToNextPage}
+                                        feedbackText={feedbackText}
+                                        isSoundOn={isSoundEffectsOn}
+                                    />
+                                )}
+                                {currentPageData.id === 'page-42' && <EngravedRiddle />}
+                                {currentPageData.id === 'page-44' && <MagicTranslation />}
                             </>
                         )}
                     </div>
@@ -206,7 +204,7 @@ const BookEngine = () => {
                     <div className={`w-full h-full relative ${!isImageOnRight ? 'px-8 md:px-16' : ''}`}>
                         {!isImageOnRight ? (
                             currentPageData.id === 'dedication' ? (
-                                <Suspense fallback={null}><OnboardingView /></Suspense>
+                                <OnboardingView />
                             ) : (
                                 <ContentArea
                                     data={currentPageData}
@@ -221,20 +219,18 @@ const BookEngine = () => {
                         ) : (
                             <>
                                 <MediaRenderer data={currentPageData} isSolved={puzzleSolved} isLeftPage={false} />
-                                <Suspense fallback={null}>
-                                    {(isPuzzle || isInteraction) && (
-                                        <PuzzleView
-                                            currentPageData={currentPageData}
-                                            puzzleSolved={puzzleSolved}
-                                            handlePuzzleInteraction={handlePuzzleInteraction}
-                                            goToNextPage={goToNextPage}
-                                            feedbackText={feedbackText}
-                                            isSoundOn={isSoundEffectsOn}
-                                        />
-                                    )}
-                                    {currentPageData.id === 'page-42' && <EngravedRiddle />}
-                                    {currentPageData.id === 'page-44' && <MagicTranslation />}
-                                </Suspense>
+                                {(isPuzzle || isInteraction) && (
+                                    <PuzzleView
+                                        currentPageData={currentPageData}
+                                        puzzleSolved={puzzleSolved}
+                                        handlePuzzleInteraction={handlePuzzleInteraction}
+                                        goToNextPage={goToNextPage}
+                                        feedbackText={feedbackText}
+                                        isSoundOn={isSoundEffectsOn}
+                                    />
+                                )}
+                                {currentPageData.id === 'page-42' && <EngravedRiddle />}
+                                {currentPageData.id === 'page-44' && <MagicTranslation />}
                             </>
                         )}
                     </div>
@@ -261,9 +257,7 @@ const BookEngine = () => {
             )}
 
             {/* Giant Rainbow Animation (appears 3s after page load) */}
-            <Suspense fallback={null}>
-                {currentPageData.id === 'page-46' && <RainbowOverlay />}
-            </Suspense>
+            {currentPageData.id === 'page-46' && <RainbowOverlay />}
 
             <div className={`relative z-10 w-full flex justify-center ${!isCover ? 'py-8 md:py-12 px-4' : ''}`}>
                 {!isCover ? (
@@ -297,14 +291,10 @@ const BookEngine = () => {
             </div>
 
             {/* Balloons Animation on Celebration Pages */}
-            <Suspense fallback={null}>
-                {['page-16', 'page-29', 'page-36'].includes(currentPageData.id) && <BalloonsAnimation count={30} />}
-            </Suspense>
+            {['page-16', 'page-29', 'page-36'].includes(currentPageData.id) && <BalloonsAnimation count={30} />}
 
             {/* Map Modal */}
-            <Suspense fallback={null}>
-                {showMap && <ProgressMap onClose={() => setShowMap(false)} />}
-            </Suspense>
+            {showMap && <ProgressMap onClose={() => setShowMap(false)} />}
         </div>
     );
 };

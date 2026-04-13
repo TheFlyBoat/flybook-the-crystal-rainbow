@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useBook } from "from "../../context/book-context"";
-import { charactersData } from "from "../../data/characters-data"";
+import { useBook } from "../../context/book-context";
+import { charactersData } from "../../data/characters-data";
 import { X, Heart, Star, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const CharacterProfiles = () => {

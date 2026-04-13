@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useBook } from "from "../../context/book-context"";
+import { useBook } from "../../context/book-context";
 import {
     Info,
     Moon,
@@ -34,9 +34,9 @@ const Header = () => {
 
     const handleFeedbackSubmit = (e) => {
         e.preventDefault();
-        console.log("Feedback submitted:", { feedback, text: feedbackText });
-        // placeholder for future email logic
-        alert("Thank you for your feedback!");
+        const subject = encodeURIComponent(`Magic Book Feedback: ${feedback === 'up' ? 'Love it!' : 'Needs help'}`);
+        const body = encodeURIComponent(feedbackText);
+        window.location.href = `mailto:hello@flyboat.uk?subject=${subject}&body=${body}`;
         setShowInfo(false);
         setFeedback(null);
         setFeedbackText('');
@@ -45,34 +45,18 @@ const Header = () => {
     return (
         <div className="h-20 flex items-center justify-between px-6 md:px-10 relative z-50 pointer-events-none">
             {/* LOGO (TOP LEFT) */}
-            <div className="flex items-center gap-2 pointer-events-auto">
-                <img loading="lazy"
-                    src=""/assets/image/logo.webp""
-                    alt="Logo"
-                    className="h-10 md:h-14 w-auto object-contain"
-                />
+            <div className="flex items-center gap-2 pointer-events-auto hover:scale-105 transition-transform active:scale-95">
+                <a href="https://flyboat.uk" target="_blank" rel="noopener noreferrer">
+                    <img loading="lazy"
+                        src="/assets/image/logo.webp"
+                        alt="Logo"
+                        className="h-10 md:h-14 w-auto object-contain"
+                    />
+                </a>
             </div>
 
             {/* SETTINGS BAR (TOP RIGHT) */}
             <div className="flex items-center gap-3 pointer-events-auto">
-                {/* Info Button */}
-                <button
-                    onClick={() => setShowInfo(true)}
-                    className="setting-circle setting-lime"
-                    title="Settings & Info"
-                >
-                    <Info size={24} strokeWidth={3} />
-                </button>
-
-                {/* Dark Mode Toggle */}
-                <button
-                    onClick={toggleTheme}
-                    className="setting-circle setting-blue"
-                    title="Dark Mode"
-                >
-                    {theme === 'dark' ? <Sun size={24} strokeWidth={3} /> : <Moon size={24} strokeWidth={3} />}
-                </button>
-
                 {/* Sound Effects Toggle */}
                 <button
                     onClick={() => setIsSoundEffectsOn(!isSoundEffectsOn)}
@@ -90,6 +74,24 @@ const Header = () => {
                 >
                     {isSoundOn ? <Mic size={24} strokeWidth={3} /> : <MicOff size={24} strokeWidth={3} />}
                 </button>
+
+                {/* Dark Mode Toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className="setting-circle setting-blue"
+                    title="Dark Mode"
+                >
+                    {theme === 'dark' ? <Sun size={24} strokeWidth={3} /> : <Moon size={24} strokeWidth={3} />}
+                </button>
+
+                {/* Info Button */}
+                <button
+                    onClick={() => setShowInfo(true)}
+                    className="setting-circle setting-lime"
+                    title="Info"
+                >
+                    <Info size={24} strokeWidth={3} />
+                </button>
             </div>
 
             {/* INFO MODAL */}
@@ -104,17 +106,35 @@ const Header = () => {
                             </button>
                         </div>
 
-                        <div className="p-8 max-h-[70vh] overflow-y-auto">
+                        <div className="p-8 max-h-[70vh] overflow-y-auto w-full text-gray-800">
+                            <section className="mb-6">
+                                <p className="text-sm leading-relaxed mb-4 text-gray-600">
+                                    <span className="font-bold text-gray-800">FlyBook – Laura and the Crystal Rainbow</span> is an interactive storybook for children aged <span className="font-bold text-gray-800">5–7</span>. Join <span className="font-bold text-gray-800">Laura and Lilo</span> on a magical adventure filled with story moments, choices, and simple puzzles.
+                                </p>
+
+                                <h3 className="text-lg font-bold mb-2">How It Works</h3>
+                                <p className="text-sm leading-relaxed mb-4 text-gray-600">
+                                    Read the story, make choices, and enjoy playful interactive moments as the adventure unfolds.
+                                </p>
+
+                                <h3 className="text-lg font-bold mb-2">For Parents and Carers</h3>
+                                <p className="text-sm leading-relaxed mb-4 text-gray-600">
+                                    Designed to be child-friendly, easy to follow, and suitable for shared reading or independent play.
+                                </p>
+
+                                <h3 className="text-lg font-bold mb-2">Created by</h3>
+                                <p className="text-sm leading-relaxed mb-8 text-gray-600">
+                                    Adam Colla / FlyBoat Creative 2026
+                                </p>
+                            </section>
+
                             {/* Privacy Policy */}
                             <section className="mb-8">
-                                <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
                                     Privacy Policy
                                 </h3>
                                 <p className="text-gray-600 text-sm leading-relaxed bg-blue-50 p-4 rounded-2xl">
-                                    We respect your privacy. This application designed for children does not collect,
-                                    store, or share any personally identifiable information. Your interactions with
-                                    the story are processed locally on your device. Any feedback provided is sent
-                                    directly and securely.
+                                    We respect your privacy. This app, designed for children, does not collect, store, or share personally identifiable information. Story interactions stay on your device. Any feedback sent is handled securely.
                                 </p>
                             </section>
 
@@ -122,10 +142,13 @@ const Header = () => {
 
                             {/* Feedback Form */}
                             <section>
-                                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
                                     <MessageSquare size={20} className="text-blue-500" />
                                     Your Feedback
                                 </h3>
+                                <p className="text-gray-600 text-sm mb-4">
+                                    Love it? Need help? Share your feedback below.
+                                </p>
                                 <div className="flex gap-4 mb-6">
                                     <button
                                         onClick={() => setFeedback('up')}
@@ -166,9 +189,9 @@ const Header = () => {
                             </section>
                         </div>
                     </div>
-                </div>
+                </div >
             )}
-        </div>
+        </div >
     );
 };
 

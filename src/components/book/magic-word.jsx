@@ -1,49 +1,49 @@
 import React from 'react';
-import { useBook } from "from "../../context/book-context"";
+import { useBook } from "../../context/book-context";
 
 // We can define categories of onomatopoeias for different sound/color mappings
 const MAGIC_WORD_REGISTRY = {
     // Taps & Bumps
-    'tap': "'/assets/audio/sfx/tap.mp3'",
-    'bump': "'/assets/audio/sfx/bump.mp3'",
-    'creak': "'/assets/audio/sfx/creak.mp3'",
-    'tick': "'/assets/audio/sfx/tick.mp3'",
+    'tap': "/assets/audio/sfx/tap.mp3",
+    'bump': "/assets/audio/sfx/bump.mp3",
+    'creak': "/assets/audio/sfx/creak.mp3",
+    'tick': "/assets/audio/sfx/tick.mp3",
 
     // Bouncy
-    'boing': "'/assets/audio/sfx/boing.mp3'",
-    'pop': "'/assets/audio/sfx/pop.mp3'",
-    'bounce': "'/assets/audio/sfx/bounce.mp3'",
+    'boing': "/assets/audio/sfx/boing.mp3",
+    'pop': "/assets/audio/sfx/pop.mp3",
+    'bounce': "/assets/audio/sfx/bounce.mp3",
 
     // Nature & Movement
-    'buzz': "'/assets/audio/sfx/buzz.mp3'",
-    'whoosh': "'/assets/audio/sfx/whoosh.mp3'",
-    'whooosh': "'/assets/audio/sfx/whoosh.mp3'",
-    'gloop': "'/assets/audio/sfx/gloop.mp3'",
-    'glop': "'/assets/audio/sfx/gloop.mp3'",
-    'blub': "'/assets/audio/sfx/blub.mp3'",
-    'rush': "'/assets/audio/sfx/rush.mp3'",
-    'gush': "'/assets/audio/sfx/gush.mp3'",
-    'splash': "'/assets/audio/sfx/splash.mp3'",
-    'flutter': "'/assets/audio/sfx/flutter.mp3'",
+    'buzz': "/assets/audio/sfx/buzz.mp3",
+    'whoosh': "/assets/audio/sfx/whoosh.mp3",
+    'whooosh': "/assets/audio/sfx/whoosh.mp3",
+    'gloop': "/assets/audio/sfx/gloop.mp3",
+    'glop': "/assets/audio/sfx/gloop.mp3",
+    'blub': "/assets/audio/sfx/blub.mp3",
+    'rush': "/assets/audio/sfx/rush.mp3",
+    'gush': "/assets/audio/sfx/gush.mp3",
+    'splash': "/assets/audio/sfx/splash.mp3",
+    'flutter': "/assets/audio/sfx/flutter.mp3",
 
     // Eating/Action
-    'crunch': "'/assets/audio/sfx/crunch.mp3'",
-    'munch': "'/assets/audio/sfx/munch.mp3'",
-    'slurp': "'/assets/audio/sfx/slurp.mp3'",
+    'crunch': "/assets/audio/sfx/crunch.mp3",
+    'munch': "/assets/audio/sfx/munch.mp3",
+    'slurp': "/assets/audio/sfx/slurp.mp3",
 
     // Magic/Atmosphere
-    'sparkle': "'/assets/audio/sfx/sparkle.mp3'",
-    'shimmer': "'/assets/audio/sfx/shimmer.mp3'",
-    'flicker': "'/assets/audio/sfx/flicker.mp3'",
-    'flick': "'/assets/audio/sfx/flicker.mp3'",
-    'flickered': "'/assets/audio/sfx/flicker.mp3'",
-    'vooooom': "'/assets/audio/sfx/vooooom.mp3'",
+    'sparkle': "/assets/audio/sfx/sparkle.mp3",
+    'shimmer': "/assets/audio/sfx/shimmer.mp3",
+    'flicker': "/assets/audio/sfx/flicker.mp3",
+    'flick': "/assets/audio/sfx/flicker.mp3",
+    'flickered': "/assets/audio/sfx/flicker.mp3",
+    'vooooom': "/assets/audio/sfx/vooooom.mp3",
 
     // Misc Actions
-    'eek': "'/assets/audio/sfx/eek.mp3'",
-    'click': "'/assets/audio/sfx/click.mp3'",
-    'clack': "'/assets/audio/sfx/clack.mp3'",
-    'puff': "'/assets/audio/sfx/puff.mp3'",
+    'eek': "/assets/audio/sfx/eek.mp3",
+    'click': "/assets/audio/sfx/click.mp3",
+    'clack': "/assets/audio/sfx/clack.mp3",
+    'puff': "/assets/audio/sfx/puff.mp3",
 };
 
 const MAGIC_WORD_COLORS = [
@@ -112,7 +112,7 @@ const MagicWord = ({ children }) => {
                         drop-shadow-md transition-all duration-200
                         group-hover:drop-shadow-lg`}
                 style={{
-                    fontFamily: '"Baloo 2", cursive',
+                    fontFamily: "'Baloo 2', cursive",
                     fontSize: '1.25em'
                 }}>
                 {children}

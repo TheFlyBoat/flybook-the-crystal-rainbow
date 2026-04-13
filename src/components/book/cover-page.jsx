@@ -12,7 +12,7 @@ const CoverPage = ({ onOpen }) => {
     // Setup Audio
     useEffect(() => {
         // Attempt to play magic sound. 
-        const audioPath = "'/assets/audio/items/magic-chime.mp3'";
+        const audioPath = "/assets/audio/items/magic-chime.mp3";
         audioRef.current = new Audio(audioPath);
         audioRef.current.volume = 0.6;
 
@@ -96,7 +96,7 @@ const CoverPage = ({ onOpen }) => {
                     {/* Layer 1: Background (Bottom) */}
                     <div className="absolute inset-0 z-0 bg-black">
                         <img loading="lazy"
-                            src=""/assets/cover/cover-background.png""
+                            src="/assets/cover/cover-background.png"
                             alt="Background"
                             className="w-full h-full object-contain transform scale-105 pointer-events-none"
                             style={{ transform: `translate(${rotation.y * -0.5}px, ${rotation.x * -0.5}px) scale(1.05)` }}
@@ -113,7 +113,7 @@ const CoverPage = ({ onOpen }) => {
                         }}
                     >
                         <img loading="lazy"
-                            src=""/assets/cover/trail-and-crystal.png""
+                            src="/assets/cover/trail-and-crystal.png"
                             alt="Rainbow Trail"
                             className="w-full h-full object-contain"
                         />
@@ -128,7 +128,7 @@ const CoverPage = ({ onOpen }) => {
                         }}
                     >
                         <img loading="lazy"
-                            src=""/assets/cover/crystal.png""
+                            src="/assets/cover/crystal.png"
                             alt="Crystal"
                             className="w-full h-full object-contain"
                         />
@@ -156,7 +156,7 @@ const CoverPage = ({ onOpen }) => {
                         className="absolute inset-0 z-30 pointer-events-none transition-transform duration-100"
                         style={{ transform: `translate(${rotation.y * 1.5}px, ${rotation.x * 1.5}px)` }}
                     >
-                        <TextLayer src=""/assets/cover/text-rainbow-crystal.png"" alt="Rainbow Crystal" sheenDelay="1.5s" />
+                        <TextLayer src="/assets/cover/text-rainbow-crystal.png" alt="Rainbow Crystal" sheenDelay="1.5s" />
                     </div>
 
                     {/* Layer 5: Text - Laura */}
@@ -164,7 +164,7 @@ const CoverPage = ({ onOpen }) => {
                         className="absolute inset-0 z-40 pointer-events-none transition-transform duration-100"
                         style={{ transform: `translate(${rotation.y * 2}px, ${rotation.x * 2}px)` }}
                     >
-                        <TextLayer src=""/assets/cover/text-laura.png"" alt="Laura" sheenDelay="0.5s" />
+                        <TextLayer src="/assets/cover/text-laura.png" alt="Laura" sheenDelay="0.5s" />
                     </div>
 
                     {/* Hint Pulse */}

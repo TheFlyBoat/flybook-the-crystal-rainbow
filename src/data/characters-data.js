@@ -3,7 +3,7 @@ export const charactersData = [
         id: 'laura',
         name: 'Laura',
         title: 'The Brave Explorer',
-        video: "'/assets/video/profiles/laura-profile.mp4'",
+        video: "/assets/video/profiles/laura-profile.mp4",
         color: 'from-pink-400 to-rose-500',
         bio: 'Laura is a 5-year-old girl with a heart full of magic! On her birthday, she sets off on an adventure to find the Rainbow Crystal and fix her favorite lantern.',
         facts: [
@@ -16,7 +16,7 @@ export const charactersData = [
         id: 'lilo',
         name: 'Lilo',
         title: 'Magic Leaf Friend',
-        video: "'/assets/video/profiles/lilo-profile.mp4'",
+        video: "/assets/video/profiles/lilo-profile.mp4",
         color: 'from-green-400 to-emerald-500',
         bio: 'Lilo is a magic leaf who loves to "boing" around. He is Laura\'s best friend and knows all the secret paths in the Rainbow Forest.',
         facts: [
@@ -29,7 +29,7 @@ export const charactersData = [
         id: 'barnaby',
         name: 'Barnaby',
         title: 'The Helpful Beaver',
-        image: "'/assets/puzzles/p13-a-beaver-puzzle-background.png'",
+        image: "/assets/puzzles/p13-a-beaver-puzzle-background.png",
         color: 'from-blue-400 to-cyan-500',
         bio: 'Barnaby is the best builder in the forest. He collects delicious berries and helps his friends whenever they are in need.',
         facts: [
@@ -42,7 +42,7 @@ export const charactersData = [
         id: 'hugo',
         name: 'Hugo',
         title: 'The Wise Hedgehog',
-        image: "'/assets/image/p21-new.webp'",
+        image: "/assets/image/p21-new.webp",
         color: 'from-amber-400 to-orange-500',
         bio: 'Hugo is a wise hedgehog who lives among the fruit trees. He may look prickly, but he is very gentle and loves a good snack.',
         facts: [
@@ -55,7 +55,7 @@ export const charactersData = [
         id: 'squeaky',
         name: 'Squeaky',
         title: 'The Silly Squirrel',
-        image: "'/assets/image/p22-new.webp'",
+        image: "/assets/image/p22-new.webp",
         color: 'from-purple-400 to-indigo-500',
         bio: 'Squeaky is a fast and energetic squirrel. He loves burying treasures like his Golden Nut, even if he sometimes forgets where they are!',
         facts: [
@@ -68,7 +68,7 @@ export const charactersData = [
         id: 'barkly',
         name: 'Barkly',
         title: 'The Sleepy Giant',
-        image: "'/assets/image/p11-new.webp'",
+        image: "/assets/image/p11-new.webp",
         color: 'from-slate-400 to-slate-600',
         bio: 'Barkly is the Ancient Tree who guards the passage to the Giant Glowing Mushrooms. He is very old and loves a good nap.',
         facts: [

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { bookData } from "from "../data/story-data"";
+import { bookData } from "../data/story-data";
 
 const BookContext = createContext();
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import MagicWord, { MAGIC_WORD_REGISTRY } from "from "./magic-word"";
-import { useBook } from "from "../../context/book-context"";
+import MagicWord, { MAGIC_WORD_REGISTRY } from "./magic-word";
+import { useBook } from "../../context/book-context";
 
 const ContentArea = ({ data, isChoice, isPuzzle, puzzleSolved, navigateTo, getIndexById, isLeftPage }) => {
     const { playSFX } = useBook();
@@ -132,10 +132,17 @@ const ContentArea = ({ data, isChoice, isPuzzle, puzzleSolved, navigateTo, getIn
                 {/* THIS centers the text block inside the PAGE, not the book */}
                 <div className={`mx-auto w-full max-w-full ${isChoice ? 'text-center' : 'text-left'}`}>
 
-                    <div className={`font-serif text-xs sm:text-sm md:text-lg lg:text-xl text-gray-800 antialiased whitespace-pre-wrap leading-relaxed ${isChoice ? 'font-baloo text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold' : ''}`}>
+                    <div
+                        className={`font-serif text-gray-800 antialiased whitespace-pre-wrap ${isChoice ? 'font-baloo font-bold' : ''}`}
+                        style={{
+                            fontSize: isChoice ? 'clamp(1.1rem, 2.5vh, 2.5rem)' : 'clamp(0.85rem, 2.5vh, 1.4rem)',
+                            lineHeight: isChoice ? '1.2' : 'clamp(1.2rem, 3vh, 2.2rem)'
+                        }}
+                    >
                         {isPuzzle && data.text?.includes('\n\n') ? (
                             <>
-                                <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black mb-6 text-gray-900 tracking-tight font-baloo">
+                                <h2 className="font-black mb-4 sm:mb-6 text-gray-900 tracking-tight font-baloo"
+                                    style={{ fontSize: 'clamp(1.2rem, 4vh, 3rem)', lineHeight: '1.1' }}>
                                     {data.text.split('\n\n')[0]}
                                 </h2>
                                 <div className="opacity-90">

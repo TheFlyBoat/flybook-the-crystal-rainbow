@@ -1,8 +1,8 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { useBook } from "from "../../context/book-context"";
+import { useBook } from "../../context/book-context";
 import { X } from 'lucide-react';
 
-const MAP_IMAGE_URL = ""/assets/progress-map/map-background.png"";
+const MAP_IMAGE_URL = "/assets/progress-map/map-background.png";
 
 const colours = {
     grey: '#475569', yellow: '#eab308', orange: '#f97316',
